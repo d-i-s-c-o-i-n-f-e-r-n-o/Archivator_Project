@@ -14,7 +14,7 @@
 #include "Archivator_Inflate.h"
 #include "Archivator_Deflate.cpp"
 #include "Archivator_Inflate.cpp"
-FILE *f;
+FILE *fc; //file create
 
 /*----------Создать архив---------- */
 int Create(char* path, char* name_zip, char* mode) {
@@ -54,24 +54,27 @@ int Create(char* path, char* name_zip, char* mode) {
     printf("%s//\n", name);
 
     //creating a new archive
-    f = fopen(name, "wb");
-    if (f != NULL)
+    fc = fopen(name, "wb");
+    if (fc != NULL)
     {
-        fclose(f);
+        fclose(fc);
         return 0;
     }
     else return 1;
 }
 /*----------Извлечь архив----------*/
-int Extract(char* path) {
-    /*
-    Function: извлечение архива по указанному адресу, передаваемому в функцию
-                если адреса нет, address == 0, тогда сохранять по default
-
-    Debug:  return 0, если успешно
-            return 1, если завершилось ошибкой
-    */
-    return 0;
+int Extract(char* path, int size) 
+{
+    unsigned char* out_path = (unsigned char*) path;
+    unsigned char* in_path = (unsigned char*)path;
+    if (path == NULL) 
+    { 
+        return 1; 
+    }
+    else 
+    {
+        return (archivator_inflate(in_path, out_path, size));
+    }
 }
 /*----------Просмотреть содержимое архива----------*/
 int List() {
@@ -126,7 +129,7 @@ int Output(bool isVerbose, char* inputPath, int mode) {
         struct stat* dir;
         dir = (struct stat*)malloc(sizeof(struct stat));
         printf("Введите путь: ");
-        scanf("%s", inputPath);
+        scanf_s("%s", inputPath);
         noDir = stat(inputPath, dir);
         free(dir);
         if (noDir) {
@@ -342,7 +345,7 @@ int main() {
             if (isVerbose) printf("Verbose: Команда \"Extract\" считана.\n");
 
             /*---DEBUG---*/
-            if (Extract(currentPath)) /*something*/;            //error
+            if (Extract(currentPath, currentSize)) printf("Verbose: Путь к файлу не может быть найден.\n");            //error
             else /*something*/;                                 //ne error
             /*---/DEBUG---*/
 
